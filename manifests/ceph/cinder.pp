@@ -9,11 +9,6 @@ class coe::ceph::cinder(
 
   class { 'ceph::apt::ceph': release => $::ceph_release }
 
-  package { 'ceph-common':
-    ensure  => present,
-    require => Apt::Source['ceph'],
-  }
-
   package { 'python-ceph':
     ensure  => present,
     require => Apt::Source['ceph'],
@@ -29,7 +24,7 @@ class coe::ceph::cinder(
 
   file { '/etc/ceph/secret.xml':
     content => template('coe/secret.xml-compute.erb'),
-    require => Package['ceph-common'],
+    require => Package['ceph'],
   }
 
   file { '/etc/ceph/client.admin':
