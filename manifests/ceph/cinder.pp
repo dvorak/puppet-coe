@@ -32,12 +32,6 @@ class coe::ceph::cinder(
     require => Package['ceph-common'],
   }
 
-  file { '/etc/ceph/uuid_injection.sh':
-    content => template('coe/uuid_injection.erb'),
-    mode    => 0750,
-    require => Exec['set-secret-value virsh'],
-  }
-
   file { '/etc/ceph/client.admin':
     ensure  => present,
     mode    => 0644,
@@ -64,13 +58,6 @@ class coe::ceph::cinder(
   exec { 'set-secret-value virsh':
     command => "/usr/bin/virsh secret-set-value --secret $(cat /etc/ceph/virsh.secret) --base64 $(ceph auth get-key client.admin)",
     require => Exec['get-or-set virsh secret'],
-  }
-
-  exec { 'install key in cinder.conf':
-    command  => '/etc/ceph/uuid_injection.sh',
-    provider => shell,
-    require  => File['/etc/ceph/uuid_injection.sh'],
-    notify   => Service['cinder-volume'],
   }
 
 }
