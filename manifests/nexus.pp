@@ -12,7 +12,7 @@ $nexus_config      = undef
   file {'/etc/quantum/plugins/cisco/nexus.ini':
     owner => 'root',
     group => 'root',
-    content => template('nexus.ini.erb')
+    content => template('coe/nexus.ini.erb')
   } ~> Service['quantum-server']
 
   if !$nexus_credentials {
