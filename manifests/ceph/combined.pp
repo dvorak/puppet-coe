@@ -1,5 +1,6 @@
 class coe::ceph::combined(
   $iscompute = false,
+  $fsid = $::ceph_monitor_fsid,
 ) {
 
   if !$iscompute {
