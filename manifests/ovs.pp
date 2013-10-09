@@ -3,8 +3,8 @@
 # to alter the log level for open vswitch
 #
 define coe::ovs(
-  $facility  = 'facility',
-  $log_level = 'log_level',
+  $facility  = 'file',
+  $log_level = 'INFO',
 ){
   exec {"$name":
     command  => "/usr/bin/ovs-appctl vlog/set ${name}:${facility}:${log_level}",
