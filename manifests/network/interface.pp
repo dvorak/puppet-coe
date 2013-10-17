@@ -4,8 +4,8 @@
 #
 # === Parameters
 #
-# [ipaddress] IP address of $interface_name. Required.
-# [netmask] Netmask of $interface_name. Required.
+# [ipaddress] IP address of $interface_name. Defaults to undef.
+# [netmask] Netmask of $interface_name. Defaults to undef.
 # [interface_name] Name of interface.  This is typically eth<interface_number>.
 #   If VLAN package is installed, the name can also be
 #   eth<interface_number>.<vlan_number>. Defaults to 'eth1'.
@@ -28,8 +28,8 @@
 # }
 
 class coe::network::interface(
-  $ipaddress,
-  $netmask,
+  $ipaddress      = undef,
+  $netmask        = undef,
   $interface_name = 'eth1',
   $ensure         = 'present',
   $hotplug        = 'false',
