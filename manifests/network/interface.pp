@@ -35,7 +35,8 @@ class coe::network::interface(
   $hotplug        = 'false',
   $family         = 'inet',
   $method         = 'static',
-  $onboot         = 'true'
+  $onboot         = 'true',
+  $options        = undef
 ) {
 
   network_config { $interface_name:
@@ -46,7 +47,8 @@ class coe::network::interface(
     ipaddress  => $ipaddress,
     netmask    => $netmask,
     onboot     => $onboot,
-    notify     => Exec['network-restart']
+    notify     => Exec['network-restart'],
+    options    => $options
   }
 
   # Changed from service to exec due to Ubuntu bug #440179
