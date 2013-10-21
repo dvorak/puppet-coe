@@ -1,20 +1,20 @@
 #
 # Add overriding rsyslog config file suppressing overzealous sudo logs
-# from the Ubuntu default quantum rootwrap configuration
+# from the Ubuntu default neutron rootwrap configuration
 
-class coe::quantum_log {
+class coe::neutron_log {
 
     package { 'rsyslog':
         ensure  => 'installed',
     }
 
-    file { '/etc/rsyslog.d/00-quantum_sudo.conf':
+    file { '/etc/rsyslog.d/00-neutron_sudo.conf':
         ensure  => 'file',
         mode    => '0644',
         owner   => 'root',
         group   => 'root',
         require => Package['rsyslog'],
-        content => template('coe/quantum_sudo_ubuntu.erb'),
+        content => template('coe/neutron_sudo_ubuntu.erb'),
         notify  => Service['rsyslog'],
     }
 
@@ -24,11 +24,11 @@ class coe::quantum_log {
         require => Package['rsyslog'],
     }
 
-    file_line { 'quantum_sudoers_loglevels':
+    file_line { 'neutron_sudoers_loglevels':
         ensure    => 'present',
-        line      => 'Defaults:quantum syslog_badpri=err, syslog_goodpri=info',
-        path      => '/etc/sudoers.d/quantum_sudoers',
-        subscribe => Package['quantum'],
+        line      => 'Defaults:neutron syslog_badpri=err, syslog_goodpri=info',
+        path      => '/etc/sudoers.d/neutron_sudoers',
+        subscribe => Package['neutron'],
     }
 
 }
