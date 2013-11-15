@@ -10,7 +10,7 @@ class coe::base(
   $controller_hostname,
   $controller_node_internal,
   $package_repo            = 'cisco_repo',
-  $openstack_release       = 'grizzly',
+  $openstack_release       = 'havana',
   $openstack_repo_location = false,
   $supplemental_repo       = false,
   $ubuntu_repo             = 'updates',
@@ -65,7 +65,7 @@ UcXHbA==
 
     # Load apt prerequisites.  This is only valid on Ubuntu systmes
     if($package_repo == 'cisco_repo') {
-      apt::source { "cisco-openstack-mirror_grizzly":
+      apt::source { "cisco-openstack-mirror_havana":
         location    => "${openstack_repo_location}/cisco",
         release     => "${openstack_release}-proposed",
         repos       => "main",
@@ -80,7 +80,7 @@ UcXHbA==
       }
 
       if $supplemental_repo {
-        apt::source { "cisco_supplemental-openstack-mirror_grizzly":
+        apt::source { "cisco_supplemental-openstack-mirror_havana":
           location    => $supplemental_repo,
           release     => "${openstack_release}-proposed",
           repos       => "main",
