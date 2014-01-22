@@ -13,6 +13,7 @@ class coe::base(
   $openstack_release       = 'havana',
   $openstack_repo_location = false,
   $supplemental_repo       = false,
+  $pocket                  = '',
   $ubuntu_repo             = 'updates',
   # optional external services
   $node_gateway            = false,
@@ -63,11 +64,29 @@ UcXHbA==
 =v6jg
 -----END PGP PUBLIC KEY BLOCK-----'
 
+    # A commit in h.1 rationalized how the URL's for the supplemental
+    # and main repos were specified.  For backward compatibility
+    # purposes (due to bug #1269856 which enables people using h.0
+    # to wind up using an unexpected repository), we need to at least
+    # provide a URL that doesn't break without for those without
+    # the necessary change.
+    if ($openstack_repo_location == 'http://openstack-repo.cisco.com/openstack') {
+      $openstack_repo_location_real = "${openstack_repo_location}/cisco"
+      warning("openstack_repo_location has changed format and was set to a known bad value (see bug #1269856), setting to $openstck_repo_location_real")
+    }
+    elsif ($openstack_repo_location == 'ftp://ftpeng.cisco.com/openstack'){
+      $openstack_repo_location_real = "${openstack_repo_location}/cisco"
+      warning("openstack_repo_location has changed format and was set to a known bad value (see bug #1269856), setting to $openstck_repo_location_real")
+    }
+    else {
+      $openstack_repo_location_real = $openstack_repo_location
+    }
+
     # Load apt prerequisites.  This is only valid on Ubuntu systmes
     if($package_repo == 'cisco_repo') {
       apt::source { "cisco-openstack-mirror_havana":
-        location    => "${openstack_repo_location}/cisco",
-        release     => "${openstack_release}-proposed",
+        location    => "${openstack_repo_location_real}",
+        release     => "${openstack_release}${pocket}",
         repos       => "main",
         key         => "E8CC67053ED3B199",
         proxy       => $proxy,
@@ -82,7 +101,7 @@ UcXHbA==
       if $supplemental_repo {
         apt::source { "cisco_supplemental-openstack-mirror_havana":
           location    => $supplemental_repo,
-          release     => "${openstack_release}-proposed",
+          release     => "${openstack_release}${pocket}",
           repos       => "main",
           key         => "E8CC67053ED3B199",
           proxy       => $proxy,
@@ -111,13 +130,13 @@ UcXHbA==
   } elsif ($osfamily == 'redhat') {
     
     if($package_repo == 'cisco_repo') {
-      if ! $openstack_repo_location {
+      if ! $openstack_repo_location_real {
         fail("Parameter openstack_repo_location must be set when package_repo is cisco_repo")
       }
       # A cisco yum repo to carry any custom patched rpms
       yumrepo { 'cisco-openstack-mirror':
         descr    => 'Cisco Openstack Repository',
-        baseurl  => $openstack_repo_location,
+        baseurl  => $openstack_repo_location_real,
         enabled  => '1',
         gpgcheck => '1',
         gpgkey   => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Cisco',
