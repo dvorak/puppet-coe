@@ -5,46 +5,50 @@ $nexus_config      = undef
 {
   package { 'python-ncclient':
     ensure => installed,
-  } ~> Service['quantum-server']
+  } ~> Service['neutron-server']
+
+#  if !defined(File['/etc/neutron/plugins/cisco']) {
+#    file { '/etc/neutron/plugins/cisco':
+#      ensure => directory,
+#      owner  => root,
+#      group  => root,
+#    }
+#  }
 
   # hack to make sure the directory is created
-  Quantum_plugin_cisco<||> ->
-  file {'/etc/quantum/plugins/cisco/nexus.ini':
-    owner => 'root',
-    group => 'root',
-    content => template('coe/nexus.ini.erb')
-  } ~> Service['quantum-server']
-
-  if !$nexus_credentials {
-    fail('No nexus credentials specified')
-  }
+  Neutron_plugin_cisco<||> ->
+  file { '/etc/neutron/plugins/cisco/cisco_plugins.ini':
+    owner   => 'root',
+    group   => 'root',
+    content => template('coe/cisco_plugins.ini.erb'),
+  } ~> Service['neutron-server']
 
   if !$nexus_config {
     fail('No nexus config specified')
   }
 
-  file {'/var/lib/quantum/.ssh':
+  file {'/var/lib/neutron/.ssh':
     ensure => directory,
-    owner  => 'quantum',
-    require => Package['quantum-server']
+    owner  => 'neutron',
+    require => Package['neutron-server']
   }
   nexus_creds{ $nexus_credentials:
-    require => [ File['/var/lib/quantum/.ssh'],
-                 File['/etc/quantum/plugins/cisco/nexus.ini'] ]
+    require => [ File['/var/lib/neutron/.ssh'],
+                 File['/etc/neutron/plugins/cisco/cisco_plugins.ini'] ]
   }
 }
 
 define nexus_creds {
   $args = split($title, '/')
-  quantum_plugin_cisco_credentials {
+  neutron_plugin_cisco_credentials {
     "${args[0]}/username": value => $args[1];
     "${args[0]}/password": value => $args[2];
   }
   exec {"${title}":
-    unless => "/bin/cat /var/lib/quantum/.ssh/known_hosts | /bin/grep ${args[0]}",
-    command => "/usr/bin/ssh-keyscan -t rsa ${args[0]} >> /var/lib/quantum/.ssh/known_hosts",
-    user    => 'quantum',
-    require => Package['quantum-server']
+    unless => "/bin/cat /var/lib/neutron/.ssh/known_hosts | /bin/grep ${args[0]}",
+    command => "/usr/bin/ssh-keyscan -t rsa ${args[0]} >> /var/lib/neutron/.ssh/known_hosts",
+    user    => 'neutron',
+    require => Package['neutron-server']
   }
 }
 
