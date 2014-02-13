@@ -9,6 +9,7 @@ class coe::base(
   $build_node_name,
   $controller_hostname,
   $controller_node_internal,
+  $domain_name,
   $package_repo            = 'cisco_repo',
   $openstack_release       = 'havana',
   $openstack_repo_location = false,
@@ -162,8 +163,9 @@ UcXHbA==
   }
 
   # /etc/hosts entries for the controller nodes
-  host { $controller_hostname:
-    ip => $controller_node_internal
+  host { "$controller_hostname.$domain_name":
+    ip           => $controller_node_internal,
+    host_aliases => $controller_hostname,
   }
 
   include collectd
