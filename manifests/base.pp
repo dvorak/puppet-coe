@@ -163,6 +163,4 @@ UcXHbA==
     ip           => $controller_node_internal,
     host_aliases => $controller_hostname,
   }
-
-  include collectd
 }
