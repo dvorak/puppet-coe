@@ -18,6 +18,7 @@ class coe::base(
   $ubuntu_repo             = 'updates',
   # optional external services
   $node_gateway            = false,
+  $create_controller_host  = false,
 ) {
 
   # Disable pipelining to avoid unfortunate interactions between apt and
@@ -156,8 +157,10 @@ UcXHbA==
   }
 
   # /etc/hosts entries for the controller nodes
-  host { "$controller_hostname.$domain_name":
-    ip           => $controller_node_internal,
-    host_aliases => $controller_hostname,
+  if $create_controller_host {
+    host { "$controller_hostname.$domain_name":
+      ip           => $controller_node_internal,
+      host_aliases => $controller_hostname,
+    }
   }
 }
