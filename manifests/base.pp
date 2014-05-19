@@ -119,6 +119,8 @@ UcXHbA==
           release =>  $openstack_release,
         }
       }
+    } elsif($package_repo == 'none') {
+      # We want to support Trusty having icehouse built in
     } else {
       fail("Unsupported package repo ${package_repo}")
     }
